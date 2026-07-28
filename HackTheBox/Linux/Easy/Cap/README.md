@@ -1,7 +1,7 @@
 # 👑 Cap - HackTheBox Machine Walkthrough
 
 **Target:** 10.129.68.112 | **OS:** Linux | **Difficulty:** Easy  
-**Auditor:** Juan Felipe Serna | **Date:** 2026-07-28
+**Auditor:** Juan Felipe Serna Villada | **Date:** 2026-07-28
 
 ---
 
@@ -151,7 +151,7 @@ mv /home/kali/Downloads/0.pcap .
 
 *Figure 11: File relocation via the mv command to consolidate target resources within the operational workspace.*
 
-#### Advanced Raw Packet Stream Inspection (Sequence 1)
+#### Advanced Raw Packet Stream Inspection (Sequence 1 & 2)
 To reconstruct the raw packet communications cached within the `0.pcap` trace file without using heavy GUI network analysis tools, an advanced data pipeline was assembled in the terminal. The binary payloads of the TCP transport layer streams were extracted dynamically using `tshark`, muted for network descriptor noise, and piped directly into `xxd` running reverse plaintext hex stream parsing modes (`xxd -ps -r`).
 
 ```bash
@@ -159,5 +159,4 @@ tshark -r 0.pcap -Tfields -e tcp.payload 2>/dev/null | xxd -ps -r
 ```
 
 ![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.png)
-
 
