@@ -171,11 +171,15 @@ As the stream reconstruction pipeline progresses downward through the cached TCP
 * **Username:** `nathan`
 * **Password:** `Buck3tH4TF0RM3!`
 
+With the plaintext credentials successfully extracted from the PCAP stream (`nathan:Buck3tH4TF0RM3!`), the next logical step is to validate their authenticity and verify initial access to the target system via the exposed FTP service.
+
 ![Successful FTP Authentication via Harvested Credentials](./assets/Conexion_exitosa.png)
 
 *Figure 15: Verification of harvested cleartext credentials by establishing an interactive FTP session as user nathan.*
 
 To validate the authenticity of the extracted credentials, an active FTP session was initiated towards the target host (`10.129.68.112`) using the `ftp` command-line client. Authenticating with the username `nathan` and the recovered password (`Buck3tH4TF0RM3!`) yielded a `230 Login successful` response from the `vsFTPd 3.0.3` service, confirming valid initial access credentials on the remote UNIX system.
+
+With the FTP session successfully authenticated, the next logical step is to enumerate the remote file system to locate the user flag and assess directory permissions.
 
 ![Remote Directory Enumeration and Permissions Verification](./assets/Verificacion_Archivos.png)
 
@@ -187,11 +191,15 @@ Once inside the interactive FTP shell, directory listings were requested using `
 * **Environment Configuration Files:** Standard user dotfiles including `.bashrc`, `.profile`, and `.cache`.
 * **Evasion Countermeasures:** Symbolic links redirection for `.bash_history` and `.viminfo` pointing to `/dev/null`, preventing local command history tracking on the remote host.
 
+Having identified the target file (`user.txt`) within nathan's home directory, the next step is to exfiltrate it to the local attacking machine for offline inspection and flag extraction.
+
 ![Exfiltrating User Flag File via Active FTP Session](./assets/Descarga_flag.png)
 
 *Figure 17: Exfiltrating the user flag (`user.txt`) to the local operational workspace using the FTP `get` command.*
 
 With the file permissions verified, the `get user.txt` command was executed within the interactive FTP interface to transfer the target asset from the remote system. The `vsFTPd` service initialized a binary mode data connection and successfully transferred the 33-byte file directly into the local `content/` working directory (`226 Transfer complete`), confirming exfiltration of the initial target flag.
+
+To confirm the integrity and content of the exfiltrated file, a direct read operation is performed from the local workspace, ensuring that the downloaded asset matches the expected target flag.
 
 ![Displaying the Captured User Flag Value](./assets/Captura_flag1.png)
 
@@ -201,11 +209,15 @@ After exiting the FTP session, the exfiltrated `user.txt` file was inspected dir
 
 * **User Flag:** `1caba3a8441c940f425925de1550a266`
 
+With the user flag successfully obtained and verified, the next phase pivots from the FTP service to a more stable and fully interactive remote shell using SSH. This provides a better foundation for internal system enumeration and privilege escalation, leveraging the same harvested credentials for authentication.
+
 ![Establishing Remote Interactive SSH Shell via Reused Credentials](./assets/Conexion_Ssh.png)
 
 *Figure 19: Pivoting to an interactive secure terminal session over SSH as user nathan.*
 
 Leveraging the plaintext credentials harvested from the PCAP traffic (`nathan:Buck3tH4TF0RM3!`), a secure remote shell was initiated via `ssh nathan@10.129.68.112`. Accepting the host key fingerprint and authenticating successfully granted full interactive shell access as user `nathan` on the underlying `Ubuntu 20.04.2 LTS` system, marking the transition into post-exploitation and internal host enumeration.
+
+Once inside the interactive SSH session, the focus shifts to local privilege escalation. A common and effective vector is checking for misconfigured Linux capabilities on widely available binaries. System enumeration begins with a recursive `getcap` scan to identify any dangerous capability sets that could be abused to elevate privileges.
 
 ![Enumerating Misconfigured Linux Capabilities on System Binaries](./assets/Capability.png)
 
@@ -216,6 +228,8 @@ To identify potential privilege escalation vectors on the local system, Linux Ca
 * **Assigned Capabilities:** `cap_setuid,cap_net_bind_service+eip`
 
 The presence of the `cap_setuid` capability permits the Python 3.8 interpreter to manipulate arbitrary process User IDs (UIDs). When combined with the Effective, Inheritable, and Permitted (`+eip`) capability flags, any execution of Python 3.8 can programmatically invoke `os.setuid(0)` to impersonate the root superuser account without requiring SUID permission bits or `sudo` privileges.
+
+Having identified the critical `cap_setuid+ep` misconfiguration on the Python 3.8 binary, the next step is to abuse this vulnerability to elevate privileges from `nathan` to `root`. The `cap_setuid` capability allows the Python interpreter to call `os.setuid()` and change its process User ID to any value, making it a powerful vector for privilege escalation.
 
 ![Privilege Escalation to Root via Python Capabilities Exploitation](./assets/Explanation_Cap.png)
 
@@ -234,6 +248,8 @@ python3.8 -c 'import os; os.setuid(0); os.system("/bin/bash")'
 * **`os.system("/bin/bash")`**: Spawns a standard interactive Bourne-Again Shell (`bash`). Since the parent Python process has already successfully modified its operational UID to `0`, the child process (`/bin/bash`) inherits the elevated root identity.
 
 Verifying the active session context with `whoami` returns `root`, confirming complete and unauthenticated privilege escalation to administrative superuser status.
+
+With root privileges successfully obtained through the Python capability exploit, the final objective is to navigate to the `/root` directory and retrieve the root flag, confirming full system compromise.
 
 ![Exfiltrating Final Root Flag via Elevated Privileges](./assets/Root_flag.png)
 
