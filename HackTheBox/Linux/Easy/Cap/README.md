@@ -205,7 +205,15 @@ After exiting the FTP session, the exfiltrated `user.txt` file was inspected dir
 
 Leveraging the plaintext credentials harvested from the PCAP traffic (`nathan:Buck3tH4TF0RM3!`), a secure remote shell was initiated via `ssh nathan@10.129.68.112`. Accepting the host key fingerprint and authenticating successfully granted full interactive shell access as user `nathan` on the underlying `Ubuntu 20.04.2 LTS` system, marking the transition into post-exploitation and internal host enumeration.
 
+![Enumerating Misconfigured Linux Capabilities on System Binaries](./assets/Capability.png)
 
+*Figure 20: Identification of dangerous Linux capabilities (`cap_setuid,cap_net_bind_service+eip`) assigned to the Python 3.8 binary.*
+
+To identify potential privilege escalation vectors on the local system, Linux Capabilities were enumerated recursively across the filesystem using `getcap -r / 2>/dev/null | grep python`. The command revealed a critical security misconfiguration on the `/usr/bin/python3.8` binary:
+
+* **Assigned Capabilities:** `cap_setuid,cap_net_bind_service+eip`
+
+The presence of the `cap_setuid` capability permits the Python 3.8 interpreter to manipulate arbitrary process User IDs (UIDs). When combined with the Effective, Inheritable, and Permitted (`+eip`) capability flags, any execution of Python 3.8 can programmatically invoke `os.setuid(0)` to impersonate the root superuser account without requiring SUID permission bits or `sudo` privileges.
 
 ---
 
