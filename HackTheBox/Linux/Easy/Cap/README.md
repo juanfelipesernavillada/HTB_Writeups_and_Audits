@@ -162,6 +162,15 @@ tshark -r 0.pcap -Tfields -e tcp.payload 2>/dev/null | xxd -ps -r
 ![Hexadecimal Stream Reconstruction Sequence 2](./assets/Extraccion_archivo0.1.png)
 ![Hexadecimal Stream Reconstruction Sequence 3](./assets/Extraccion_archivo0.3.png)
 
+*Figure 14: Cleartext packet stream analysis revealing unencrypted vsftpd credentials (`nathan:Buck3tH4TF0RM3!`) and interactive FTP session commands.*
+
+As the stream reconstruction pipeline progresses downward through the cached TCP payload, the raw packet stream captures an unencrypted authentication exchange against the `vsftpd 3.0.3` service. The stream explicitly reveals valid plaintext credentials:
+
+* **Username:** `nathan`
+* **Password:** `Buck3tH4TF0RM3!`
+
+Further analysis of the captured FTP session logs shows post-authentication commands executed by the user, including directory listings (`LIST -al`), binary mode transfers (`TYPE I`), and file retrieval attempts (`RETR notes.txt`), confirming full interactive access was previously established over cleartext FTP.
+
 ---
 
 ## 🛡️ Remediation & Hardening
