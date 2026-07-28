@@ -51,7 +51,7 @@ Root Flag Captured
 
 ### Phase 1: Reconnaissance & Environment Setup
 
-To ensure professional operational hygiene, the audit process begins by deploying a standardized workspace on the attacking machine. Initial command-line interactions involved initializing the master project folder and navigating directly into the newly created directory to establish a clean base of operations.
+Professional operational hygiene requires a dedicated, structured workspace before interacting with any target infrastructure. To initiate the audit, the root project directory was generated on the attacking machine, and navigation commands were executed to establish our local base of operations.
 
 ![Project Root Directory Creation and Navigation](./assets/Creamos_Cap.png)
 
@@ -78,9 +78,34 @@ To discover all operational services on the target infrastructure, a full TCP po
 ![Nmap Full TCP Port Discovery Scan](./assets/Primer_Nmap.png)
 
 *Figure 4: Full TCP port discovery scan output detailing open ports.*
-* **Service Detection:** vsftpd 3.0.3, OpenSSH 8.2p1, Gunicorn (Python web app).
 
-### Phase 2: Exploitation (IDOR & PCAP)
+### Service Version & Script Enumeration
+
+Following the initial discovery, a targeted service enumeration scan (`-sCV`) was conducted specifically on the open ports (21, 22, and 80). This assessment aims to determine software versioning, identifying potential vulnerabilities or misconfigurations, and validating underlying operating system details. The findings were exported in an Nmap format (`-oN targeted`) for internal audit review.
+
+![Nmap Targeted Service Enumeration Scan](./assets/Nmap_definitivo.png)
+
+*Figure 5: Targeted service version scanning and script execution details.*
+
+The aggressive enumeration script provided definitive context regarding the target's attack surface:
+* **Port 21 (FTP):** Running `vsftpd 3.0.3`.
+* **Port 22 (SSH):** Running `OpenSSH 8.2p1` hosted on an Ubuntu Linux distribution.
+* **Port 80 (HTTP):** Running a Python-based web server application managed by `Gunicorn`, explicitly exposing a web panel titled *"Security Dashboard"*.
+
+---
+
+### Phase 2: Exploitation & Insecure Direct Object References (IDOR)
+
+#### Web Application Enumeration
+Navigating to the operational HTTP service on port 80 (`http://10.129.68.112`) grants unauthenticated access to a customized administrative panel titled *"Security Dashboard"*. To systematically map the web application's infrastructure and components, passive fingerprinting was performed using the *Wappalyzer* extension.
+
+![Web Application Passive Fingerprinting](./assets/Wappalyzer.png)
+
+*Figure 6: Administrative web interface analysis and technology stack detection via Wappalyzer.*
+
+The technological analysis confirmed that the platform backend is powered by **Python**, running on top of a **Gunicorn** web server. The dashboard provides statistical visualizations tracking network metrics, port scans, and failed login events, explicitly operating under the active session profile of a local user named **Nathan**.
+
+#### IDOR Discovery
 - **IDOR Discovery:** The endpoint `/download/` uses sequential IDs. Testing `0` revealed a live PCAP with 72 packets.
 - **Download:** `wget http://10.129.68 -O 0.pcap`
 - **Credential Extraction:** `strings 0.pcap | grep -E "USER|PASS"` → `nathan:Buck3tH4TF0RM3!`
