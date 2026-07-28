@@ -191,6 +191,16 @@ Once inside the interactive FTP shell, directory listings were requested using `
 
 With the file permissions verified, the `get user.txt` command was executed within the interactive FTP interface to transfer the target asset from the remote system. The `vsFTPd` service initialized a binary mode data connection and successfully transferred the 33-byte file directly into the local `content/` working directory (`226 Transfer complete`), confirming exfiltration of the initial target flag.
 
+![Displaying the Captured User Flag Value](./assets/Captura_flag1.png)
+
+*Figure 18: Reading the contents of user.txt to verify and log the initial user flag value.*
+
+After exiting the FTP session, the exfiltrated `user.txt` file was inspected directly from the local `content/` operational directory using the `cat` command. This verified the integrity of the downloaded asset and extracted the initial user flag:
+
+* **User Flag:** `1caba3a8441c940f425925de1550a266`
+
+
+
 ---
 
 ## 🛡️ Remediation & Hardening
