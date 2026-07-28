@@ -160,7 +160,7 @@ tshark -r 0.pcap -Tfields -e tcp.payload 2>/dev/null | xxd -ps -r
 
 ![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.png)
 ![Hexadecimal Stream Reconstruction Sequence 2](./assets/Extraccion_archivo0.1.png)
-![Hexadecimal Stream Reconstruction Sequence 3](./assets/Extraccion_archvo0.2.png)
+![Hexadecimal Stream Reconstruction Sequence 3](./assets/Extraccion_archivo0.2.png)
 
 ---
 
