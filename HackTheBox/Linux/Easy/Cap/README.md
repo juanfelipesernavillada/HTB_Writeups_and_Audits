@@ -215,6 +215,25 @@ To identify potential privilege escalation vectors on the local system, Linux Ca
 
 The presence of the `cap_setuid` capability permits the Python 3.8 interpreter to manipulate arbitrary process User IDs (UIDs). When combined with the Effective, Inheritable, and Permitted (`+eip`) capability flags, any execution of Python 3.8 can programmatically invoke `os.setuid(0)` to impersonate the root superuser account without requiring SUID permission bits or `sudo` privileges.
 
+![Privilege Escalation to Root via Python Capabilities Exploitation](./assets/Explanation_Cap.png)
+
+*Figure 21: Exploiting the `cap_setuid` capability on Python 3.8 to obtain an interactive root shell.*
+
+To abuse the misconfigured POSIX capability and elevate privileges from `nathan` to `root`, a single-line Python payload was executed directly in the terminal:
+
+```bash
+python3.8 -c 'import os; os.setuid(0); os.system("/bin/bash")'
+```
+
+#### Technical Breakdown of the Exploitation Vector
+
+* **`import os`**: Loads Python's Operating System interface module, providing direct access to native C-level system calls.
+* **`os.setuid(0)`**: Triggers the `setuid` system call requested to set the real and effective User ID of the current process to `0` (`root`). Under normal user privileges, this call would be denied with a `Permission denied` error. However, because `/usr/bin/python3.8` holds the `cap_setuid+eip` capability set, the Linux kernel permits the process to override standard permission checks and adopt UID 0.
+* **`os.system("/bin/bash")`**: Spawns a standard interactive Bourne-Again Shell (`bash`). Since the parent Python process has already successfully modified its operational UID to `0`, the child process (`/bin/bash`) inherits the elevated root identity.
+
+Verifying the active session context with `whoami` returns `root`, confirming complete and unauthenticated privilege escalation to administrative superuser status.
+
+
 ---
 
 ## 🛡️ Remediation & Hardening
