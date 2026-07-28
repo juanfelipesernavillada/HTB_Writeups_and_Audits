@@ -51,17 +51,23 @@ Root Flag Captured
 
 ### Phase 1: Reconnaissance & Environment Setup
 
-To ensure professional operational hygiene during the assessment, a standardized project workspace was initialized using a custom Bash function. This structures the working directories into dedicated folders for network scans, extracted content, and custom scripts.
+To ensure professional operational hygiene, the audit process begins by deploying a standardized workspace on the attacking machine. Initial command-line interactions involved initializing the master project folder and navigating directly into the newly created directory to establish a clean base of operations.
 
-![Workspace Architecture Setup](./assets/Funcion_Mkt.png)
+![Project Root Directory Creation and Navigation](./assets/Creamos_Cap.png)
 
-*Figure 1: Directory architecture setup using the mkt function.*
+*Figure 1: Initial creation of the target machine project root directory and workspace navigation.*
 
-Once inside the scanning environment, an ICMP echo request (`ping`) was issued to verify network connectivity with the target host and perform initial operating system fingerprinting via TTL analysis.
+Following the setup of the primary project folder, a specialized Bash function named `mkt` was executed to automatically deploy the internal directory architecture. This maps out dedicated storage spaces for isolated network scans (`nmap/`), looted target assets (`content/`), and development scripts (`scripts/`).
+
+![Workspace Architecture Design](./assets/Funcion_Mkt.png)
+
+*Figure 2: Custom mkt function definition and automated workspace architecture setup.*
+
+Once inside the dedicated scanning environment, an ICMP echo request (`ping`) was issued to verify network connectivity with the target host and perform initial operating system fingerprinting via TTL analysis.
 
 ![ICMP Connectivity Verification](./assets/primer_Ping.png)
 
-*Figure 2: Active host verification and ICMP reply analysis.*
+*Figure 3: Active host verification and network response analysis.*
 
 The target host successfully responded to the request. The network packet analysis revealed a **TTL (Time to Live) of 63**, which is heavily consistent with a **Linux** kernel system (default TTL 64), narrowing down our upcoming enumeration vectors.
 
@@ -70,7 +76,7 @@ The target host successfully responded to the request. The network packet analys
 
 ### Phase 2: Exploitation (IDOR & PCAP)
 - **IDOR Discovery:** The endpoint `/download/` uses sequential IDs. Testing `0` revealed a live PCAP with 72 packets.
-- **Download:** `wget http://10.129.68.112/download/0 -O 0.pcap`
+- **Download:** `wget http://10.129.68 -O 0.pcap`
 - **Credential Extraction:** `strings 0.pcap | grep -E "USER|PASS"` → `nathan:Buck3tH4TF0RM3!`
 - **Initial Access:** FTP login and download of `user.txt`.
 
