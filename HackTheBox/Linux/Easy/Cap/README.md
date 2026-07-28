@@ -175,6 +175,17 @@ As the stream reconstruction pipeline progresses downward through the cached TCP
 
 To validate the authenticity of the extracted credentials, an active FTP session was initiated towards the target host (`10.129.68.112`) using the `ftp` command-line client. Authenticating with the username `nathan` and the recovered password (`Buck3tH4TF0RM3!`) yielded a `230 Login successful` response from the `vsFTPd 3.0.3` service, confirming valid initial access credentials on the remote UNIX system.
 
+![Remote Directory Enumeration and Permissions Verification](./assets/Verificacion_Archivos.png)
+
+*Figure 16: Enumeration of user nathan's home directory contents and file permission structures via active FTP commands.*
+
+Once inside the interactive FTP shell, directory listings were requested using `dir` and `ls -la` to map the remote file structure and evaluate file permissions within user `nathan`'s home directory. The enumeration output revealed:
+
+* **Target Asset:** The target user flag `user.txt` with strictly restricted read-only permissions (`-r--------`) belonging to UID/GID `1001`.
+* **Environment Configuration Files:** Standard user dotfiles including `.bashrc`, `.profile`, and `.cache`.
+* **Evasion Countermeasures:** Symbolic links redirection for `.bash_history` and `.viminfo` pointing to `/dev/null`, preventing local command history tracking on the remote host.
+
+
 ---
 
 ## 🛡️ Remediation & Hardening
