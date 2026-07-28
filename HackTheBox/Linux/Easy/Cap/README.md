@@ -159,7 +159,37 @@ This data concentration validated that a historical session capture had been suc
 
 ---
 
+---
+
 ## 📚 Lessons Learned
 
-- **IDOR** is a subtle but critical flaw that can expose sensitive internal data (like PCAPs) if not properly controlled.
+This assessment reinforces several key offensive and defensive security concepts that are frequently encountered during real-world penetration tests:
+
+- **IDOR (Insecure Direct Object Reference)** is a subtle but highly critical vulnerability capable of exposing sensitive internal resources when proper authorization checks are absent.
+- **Network traffic analysis**, even using simple utilities such as `strings`, `tshark`, or Wireshark's **Follow TCP Stream**, represents a powerful post-exploitation technique for recovering plaintext credentials and other sensitive information from captured traffic.
+- **Linux Capabilities** provide a fine-grained privilege delegation mechanism intended to reduce reliance on SUID binaries. However, when misconfigured—such as assigning `cap_setuid+ep` to the Python interpreter—they effectively grant full privilege escalation and become just as dangerous as traditional SUID executables.
+- **Defense in depth** requires much more than patching vulnerable applications. Organizations should continuously audit system capabilities, file permissions, exposed services, and authentication mechanisms to minimize the impact of configuration mistakes.
+
+---
+
+## 🏁 Conclusion
+
+The **HackTheBox Cap** machine provides an excellent demonstration of how a seemingly simple web application vulnerability can escalate into a complete system compromise.
+
+The attack chain followed a clear progression:
+
+1. Exploit an **IDOR** vulnerability to access unauthorized packet capture files.
+2. Recover plaintext FTP credentials from the captured network traffic.
+3. Obtain initial access through the exposed FTP service.
+4. Reuse the recovered credentials to establish an SSH session.
+5. Enumerate Linux capabilities and identify an unsafe `cap_setuid+ep` assignment on the Python interpreter.
+6. Abuse the capability to obtain a root shell and fully compromise the target system.
+
+This walkthrough highlights the importance of secure application development, proper authorization controls, encrypted network communications, and continuous operating system hardening. Even a single overlooked misconfiguration can create an attack path that allows an external attacker to progress from unauthenticated access to complete administrative control.
+
+---
+
+**Writeup prepared for the HackTheBox "Cap" machine by Juan Felipe Serna Villada.**
+
+*All commands, techniques, and captured flags are documented exclusively for educational purposes and authorized security training environments.*
 
