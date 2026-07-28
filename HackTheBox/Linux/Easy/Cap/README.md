@@ -199,6 +199,12 @@ After exiting the FTP session, the exfiltrated `user.txt` file was inspected dir
 
 * **User Flag:** `1caba3a8441c940f425925de1550a266`
 
+![Establishing Remote Interactive SSH Shell via Reused Credentials](./assets/Conexion_Ssh.png)
+
+*Figure 19: Pivoting to an interactive secure terminal session over SSH as user nathan.*
+
+Leveraging the plaintext credentials harvested from the PCAP traffic (`nathan:Buck3tH4TF0RM3!`), a secure remote shell was initiated via `ssh nathan@10.129.68.112`. Accepting the host key fingerprint and authenticating successfully granted full interactive shell access as user `nathan` on the underlying `Ubuntu 20.04.2 LTS` system, marking the transition into post-exploitation and internal host enumeration.
+
 
 
 ---
