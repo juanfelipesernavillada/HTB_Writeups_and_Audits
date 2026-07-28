@@ -51,7 +51,7 @@ Root Flag Captured
 
 ## 🔍 Phase-by-Phase Breakdown
 
-### Phase 1: Reconnaissance & Environment Setup
+###👾 Phase 1: Reconnaissance & Environment Setup
 
 Professional operational hygiene requires a dedicated, structured workspace before interacting with any target infrastructure. To initiate the audit, the root project directory was generated on the attacking machine, and navigation commands were executed to establish our local base of operations.
 
@@ -73,7 +73,7 @@ Once inside the dedicated scanning environment, an ICMP echo request (`ping`) wa
 
 The target host successfully responded to the request. The network packet analysis revealed a **TTL (Time to Live) of 63**, which is heavily consistent with a **Linux** kernel system (default TTL 64), narrowing down our upcoming enumeration vectors.
 
-### Port Discovery Scan
+###🔬 Port Discovery Scan
 
 To discover all operational services on the target infrastructure, a full TCP port discovery scan (`-p-`) was executed utilizing a SYN Stealth Scan (`-sS`). The rate was limited to a minimum of 5000 packets per second to optimize scanning speed while preserving network stability. The output was directed into a greppable format (`-oG allPorts`) for historical record tracking.
 
@@ -81,7 +81,7 @@ To discover all operational services on the target infrastructure, a full TCP po
 
 *Figure 4: Full TCP port discovery scan output detailing open ports.*
 
-### Service Version & Script Enumeration
+###🫆 Service Version & Script Enumeration
 
 Following the initial discovery, a targeted service enumeration scan (`-sCV`) was conducted specifically on the open ports (21, 22, and 80). This assessment aims to determine software versioning, identifying potential vulnerabilities or misconfigurations, and validating underlying operating system details. The findings were exported in an Nmap format (`-oN targeted`) for internal audit review.
 
@@ -96,9 +96,9 @@ The aggressive enumeration script provided definitive context regarding the targ
 
 ---
 
-### Phase 2: Exploitation & Insecure Direct Object References (IDOR)
+###💣💥 Phase 2: Exploitation & Insecure Direct Object References (IDOR)
 
-#### Web Application Enumeration
+####🌐 Web Application Enumeration
 Navigating to the operational HTTP service on port 80 (`http://10.129.68.112`) grants unauthenticated access to a customized administrative panel titled *"Security Dashboard"*. To systematically map the web application's infrastructure and components, passive fingerprinting was performed using the *Wappalyzer* extension.
 
 ![Web Application Passive Fingerprinting](./assets/Wappalyzer.png)
@@ -107,7 +107,7 @@ Navigating to the operational HTTP service on port 80 (`http://10.129.68.112`) g
 
 The technological analysis confirmed that the platform backend is powered by **Python**, running on top of a **Gunicorn** web server. The dashboard provides statistical visualizations tracking network metrics, port scans, and failed login events, explicitly operating under the active session profile of a local user named **Nathan**.
 
-#### IDOR Data Analysis & PCAP Harvesting
+####🔬 IDOR Data Analysis & PCAP Harvesting
 When navigating through the security snapshots panel, newly generated indices (such as `/data/3`) displayed a total of zero captured network packets. This indicated that no data transactions had been recorded during those specific administrative windows. To identify an actionable attack vector, sequential data harvesting was performed by systematically manipulating the numeric parameter downwards in the web browser's URL bar.
 
 ![IDOR Boundary Exploitation and Data Exfiltration](./assets/Seccion_Descargas.png)
@@ -116,7 +116,7 @@ When navigating through the security snapshots panel, newly generated indices (s
 
 Upon lowering the index parameter to `/data/1`, the backend structure processed the request without any session authorization checks and exposed a valid, historical network capture payload showing active transactions. The unauthenticated request successfully exfiltrated a **`1.pcap`** packet transaction history log. The file was downloaded locally using the *Thunar* environment manager on the attacking system, paving the way for cleartext credential analysis.
 
-#### Network Traffic Analysis & Pivoting Strategy
+####📡 Network Traffic Analysis & Pivoting Strategy
 The exfiltrated packet file `1.pcap` was relocated to the dedicated `content/` workspace for technical inspection. Initial packet extraction was attempted by executing a packet reading command via `tshark`:
 
 ```bash
@@ -129,7 +129,7 @@ tshark -r ~/cap/content/1.pcap
 
 The execution returned a completely blank output. This metadata inspection confirmed that while the index allocation existed on the web server, the snapshot recorded **0 packets** of active traffic during that log capture interval. Recognizing this data limitation, a parameter pivoting strategy was applied to expand the audit scope. By manipulating the index boundary down to the initial entry (`/data/0`), a secondary file named **`0.pcap`** was successfully exfiltrated.
 
-#### Exploiting IDOR to Target Entry 0
+####🛖 Exploiting IDOR to Target Entry 0
 Upon forcing the index parameter down to `0` (`http://10.129.68`), the Security Dashboard successfully updated its interface, rendering critical log data metrics. The object mapping disclosed a total metadata population of **72 captured network packets**.
 
 ![IDOR Token Modification onto Index 0](./assets/Descargas_0.png)
@@ -142,7 +142,7 @@ This data concentration validated that a historical session capture had been suc
 
 *Figure 10: Verification of the downloaded 0.pcap data container within the attacking local environment.*
 
-#### Local Workspace Consolidation
+####💾 Local Workspace Consolidation
 To maintain a strict and cohesive testing workflow, exfiltrated files must be moved out of generic system directories. The downloaded storage container was consolidated by transferring it from the main host download directory into the dedicated local repository subfolder (`~/cap/content/`) utilizing the native `mv` command.
 
 ```bash
@@ -153,7 +153,7 @@ mv /home/kali/Downloads/0.pcap .
 
 *Figure 11: File relocation via the mv command to consolidate target resources within the operational workspace.*
 
-#### Advanced Raw Packet Stream Inspection (Sequence 1)
+####🔬💽 Advanced Raw Packet Stream Inspection (Sequence 1)
 To reconstruct the raw packet communications cached within the `0.pcap` trace file without using heavy GUI network analysis tools, an advanced data pipeline was assembled in the terminal. The binary payloads of the TCP transport layer streams were extracted dynamically using `tshark`, muted for network descriptor noise, and piped directly into `xxd` running reverse plaintext hex stream parsing modes (`xxd -ps -r`).
 
 ```bash
@@ -241,7 +241,7 @@ To abuse the misconfigured POSIX capability and elevate privileges from `nathan`
 python3.8 -c 'import os; os.setuid(0); os.system("/bin/bash")'
 ```
 
-#### Technical Breakdown of the Exploitation Vector
+####📝💣 Technical Breakdown of the Exploitation Vector
 
 * **`import os`**: Loads Python's Operating System interface module, providing direct access to native C-level system calls.
 * **`os.setuid(0)`**: Triggers the `setuid` system call requested to set the real and effective User ID of the current process to `0` (`root`). Under normal user privileges, this call would be denied with a `Permission denied` error. However, because `/usr/bin/python3.8` holds the `cap_setuid+eip` capability set, the Linux kernel permits the process to override standard permission checks and adopt UID 0.
