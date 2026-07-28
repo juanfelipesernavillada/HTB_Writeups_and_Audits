@@ -75,7 +75,7 @@ The target host successfully responded to the request. The network packet analys
 
 To discover all operational services on the target infrastructure, a full TCP port discovery scan (`-p-`) was executed utilizing a SYN Stealth Scan (`-sS`). The rate was limited to a minimum of 5000 packets per second to optimize scanning speed while preserving network stability. The output was directed into a greppable format (`-oG allPorts`) for historical record tracking.
 
-![Nmap Full TCP Port Discovery Scan]./assets/allPorts_Nmap.png)
+![Nmap Full TCP Port Discovery Scan](./assets/Primer_Nmap.png)
 
 *Figure 4: Full TCP port discovery scan output detailing open ports.*
 * **Service Detection:** vsftpd 3.0.3, OpenSSH 8.2p1, Gunicorn (Python web app).
