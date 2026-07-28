@@ -169,7 +169,11 @@ As the stream reconstruction pipeline progresses downward through the cached TCP
 * **Username:** `nathan`
 * **Password:** `Buck3tH4TF0RM3!`
 
-Further analysis of the captured FTP session logs shows post-authentication commands executed by the user, including directory listings (`LIST -al`), binary mode transfers (`TYPE I`), and file retrieval attempts (`RETR notes.txt`), confirming full interactive access was previously established over cleartext FTP.
+![Successful FTP Authentication via Harvested Credentials](./assets/Conexion_exitosa.png)
+
+*Figure 15: Verification of harvested cleartext credentials by establishing an interactive FTP session as user nathan.*
+
+To validate the authenticity of the extracted credentials, an active FTP session was initiated towards the target host (`10.129.68.112`) using the `ftp` command-line client. Authenticating with the username `nathan` and the recovered password (`Buck3tH4TF0RM3!`) yielded a `230 Login successful` response from the `vsFTPd 3.0.3` service, confirming valid initial access credentials on the remote UNIX system.
 
 ---
 
