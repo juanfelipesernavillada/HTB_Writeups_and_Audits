@@ -160,9 +160,18 @@ tshark -r 0.pcap -Tfields -e tcp.payload 2>/dev/null | xxd -ps -r
 
 ![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.png)
 ![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.1.png)
-![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.2.png)
+![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archvo0.2.png)
 
 ---
+
+## 🛡️ Remediation & Hardening
+
+| Vulnerability | Root Cause | Recommended Fix |
+| :--- | :--- | :--- |
+| **IDOR on `/download/` & `/data/`** | Sequential numeric IDs processed without session authorization checks. | Replace sequential IDs with cryptographically secure UUIDs (e.g., `/download/<uuid>`), enforce authentication middleware, and validate user permissions server-side. |
+| **Cleartext FTP Credentials in PCAP** | Storing unencrypted network traffic logs accessible to unauthenticated roles. | Restrict PCAP file access strictly to system administrators. Replace cleartext FTP with encrypted protocols such as SFTP or FTPS. |
+| **Python `cap_setuid+ep` Misconfiguration** | Dangerous Linux capability assigned to a general-purpose programming binary. | Remove the capability: `setcap -r /usr/bin/python3.8`. Continuously audit system capabilities with `getcap -r /`. |
+
 
 ## 📚 Lessons Learned
 
