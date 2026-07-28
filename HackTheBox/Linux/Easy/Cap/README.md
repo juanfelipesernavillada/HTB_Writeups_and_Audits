@@ -134,13 +134,6 @@ Upon forcing the index parameter down to `0` (`http://10.129.68`), the Security 
 
 *Figure 9: Dashboard tracking data updates upon exploiting index 0, displaying 72 populated packet records.*
 
-#### Local Workspace Consolidation
-To maintain a strict and cohesive testing workflow, exfiltrated files must be moved out of generic system directories. The downloaded storage container was consolidated by transferring it from the main host download directory into the dedicated local repository subfolder (`~/cap/content/`) utilizing the native `mv` command.
-
-```bash
-mv /home/kali/Downloads/0.pcap .
-```
-
 This data concentration validated that a historical session capture had been successfully intercepted. Clicking the administrative interactive item **"Download"** exfiltrated the raw data payload.
 
 ![Successful Exfiltration of 0.pcap](./assets/Descargas_0.pcap.png)
@@ -166,8 +159,9 @@ tshark -r 0.pcap -Tfields -e tcp.payload 2>/dev/null | xxd -ps -r
 ```
 
 ![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.png)
+![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.1.png)
+![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.2.png)
 
-=======
 ---
 
 ## 📚 Lessons Learned
