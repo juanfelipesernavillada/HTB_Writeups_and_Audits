@@ -106,7 +106,7 @@ Navigating to the operational HTTP service on port 80 (`http://10.129.68.112`) g
 The technological analysis confirmed that the platform backend is powered by **Python**, running on top of a **Gunicorn** web server. The dashboard provides statistical visualizations tracking network metrics, port scans, and failed login events, explicitly operating under the active session profile of a local user named **Nathan**.
 
 #### IDOR Data Analysis & PCAP Harvesting
-When navigating through the security snapshots panel, newly generated indices (such as `/data/3`) displayed a total of zero captured network packets. This indicated that no data transactions had been recorded during those specific administrative windows. To identify a actionable attack vector, sequential data harvesting was performed by systematically manipulating the numeric parameter downwards in the web browser's URL bar.
+When navigating through the security snapshots panel, newly generated indices (such as `/data/3`) displayed a total of zero captured network packets. This indicated that no data transactions had been recorded during those specific administrative windows. To identify an actionable attack vector, sequential data harvesting was performed by systematically manipulating the numeric parameter downwards in the web browser's URL bar.
 
 ![IDOR Boundary Exploitation and Data Exfiltration](./assets/Seccion_Descargas.png)
 
@@ -114,7 +114,21 @@ When navigating through the security snapshots panel, newly generated indices (s
 
 Upon lowering the index parameter to `/data/1`, the backend structure processed the request without any session authorization checks and exposed a valid, historical network capture payload showing active transactions. The unauthenticated request successfully exfiltrated a **`1.pcap`** packet transaction history log. The file was downloaded locally using the *Thunar* environment manager on the attacking system, paving the way for cleartext credential analysis.
 
-#### IDOR Boundary Exploitation
+#### Network Traffic Analysis & Pivoting Strategy
+The exfiltrated packet file `1.pcap` was relocated to the dedicated `content/` workspace for technical inspection. Initial packet extraction was attempted by executing a packet reading command via `tshark`:
+
+```bash
+tshark -r ~/cap/content/1.pcap
+```
+
+![Tshark Packet Reading Attempt](./assets/tshark_1.png)
+
+*Figure 8: Evaluation of the 1.pcap file via Tshark revealing zero network transactions.*
+
+The execution returned a completely blank output. This metadata inspection confirmed that while the index allocation existed on the web server, the snapshot recorded **0 packets** of active traffic during that log capture interval. Recognizing this data limitation, a parameter pivoting strategy was applied to expand the audit scope. By manipulating the index boundary down to the initial entry (`/data/0`), a secondary file named **`0.pcap`** was successfully exfiltrated.
+
+#### IDOR Boundary Exploitation & Credential Harvesting
+- **Download:** `wget http://10.129.68 -O 0.pcap`
 - **Credential Extraction:** `strings 0.pcap | grep -E "USER|PASS"` → `nathan:Buck3tH4TF0RM3!`
 - **Initial Access:** FTP login and download of `user.txt`.
 
@@ -150,10 +164,4 @@ Upon lowering the index parameter to `/data/1`, the backend structure processed 
 
 The "Cap" machine is an excellent demonstration of how a single misconfiguration (IDOR) can cascade into full system compromise. The attack chain is clear:
 1. Exploit IDOR to steal credentials.
-2. Use credentials to gain initial access.
-3. Abuse Linux capabilities to become root.
 
-This walkthrough highlights the importance of secure coding practices, network encryption, and regular system hardening audits. The findings and remediation steps provided here can be directly applied to real-world security assessments.
-
----
-*Writeup prepared for the HackTheBox Cap machine by Juan Felipe Serna. All commands and flags are documented for educational purposes.*
