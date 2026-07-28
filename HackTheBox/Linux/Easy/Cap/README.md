@@ -127,8 +127,16 @@ tshark -r ~/cap/content/1.pcap
 
 The execution returned a completely blank output. This metadata inspection confirmed that while the index allocation existed on the web server, the snapshot recorded **0 packets** of active traffic during that log capture interval. Recognizing this data limitation, a parameter pivoting strategy was applied to expand the audit scope. By manipulating the index boundary down to the initial entry (`/data/0`), a secondary file named **`0.pcap`** was successfully exfiltrated.
 
+#### Exploiting IDOR to Target Entry 0
+Upon forcing the index parameter down to `0` (`http://10.129.68`), the Security Dashboard successfully updated its interface, rendering critical log data metrics. The object mapping disclosed a total metadata population of **72 captured network packets**.
+
+![IDOR Token Modification onto Index 0](./assets/Descargas_0.png)
+
+*Figure 9: Dashboard tracking data updates upon exploiting index 0, displaying 72 populated packet records.*
+
+This data concentration validated that a historical session capture had been successfully intercepted. Clicking the administrative interactive item **"Download"** exfiltrated the authentic **`0.pcap`** data container, providing the specific raw data required to initiate local credential hunting.
+
 #### IDOR Boundary Exploitation & Credential Harvesting
-- **Download:** `wget http://10.129.68 -O 0.pcap`
 - **Credential Extraction:** `strings 0.pcap | grep -E "USER|PASS"` → `nathan:Buck3tH4TF0RM3!`
 - **Initial Access:** FTP login and download of `user.txt`.
 
@@ -154,14 +162,5 @@ The execution returned a completely blank output. This metadata inspection confi
 ## 📚 Lessons Learned
 
 - **IDOR** is a subtle but critical flaw that can expose sensitive internal data (like PCAPs) if not properly controlled.
-- **Network traffic analysis** (even simple `strings` or `tshark` filters) is a powerful post-exploitation technique for credential harvesting.
-- **Linux Capabilities** are a powerful security feature, but when misconfigured (e.g., `cap_setuid+ep` on Python), they can be as dangerous as SUID binaries.
-- **Defense in depth** requires not only patching applications but also hardening system configurations (capabilities, file permissions, and service exposure).
 
----
-
-## 🏁 Conclusion
-
-The "Cap" machine is an excellent demonstration of how a single misconfiguration (IDOR) can cascade into full system compromise. The attack chain is clear:
-1. Exploit IDOR to steal credentials.
 
