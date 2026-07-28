@@ -1,4 +1,4 @@
-# 🧢 Cap - HackTheBox Machine Walkthrough
+# 👑 Cap - HackTheBox Machine Walkthrough
 
 **Target:** 10.129.68.112 | **OS:** Linux | **Difficulty:** Easy  
 **Auditor:** Juan Felipe Serna | **Date:** 2026-07-28
@@ -105,9 +105,16 @@ Navigating to the operational HTTP service on port 80 (`http://10.129.68.112`) g
 
 The technological analysis confirmed that the platform backend is powered by **Python**, running on top of a **Gunicorn** web server. The dashboard provides statistical visualizations tracking network metrics, port scans, and failed login events, explicitly operating under the active session profile of a local user named **Nathan**.
 
-#### IDOR Discovery
-- **IDOR Discovery:** The endpoint `/download/` uses sequential IDs. Testing `0` revealed a live PCAP with 72 packets.
-- **Download:** `wget http://10.129.68 -O 0.pcap`
+#### IDOR Data Analysis & PCAP Harvesting
+When navigating through the security snapshots panel, newly generated indices (such as `/data/3`) displayed a total of zero captured network packets. This indicated that no data transactions had been recorded during those specific administrative windows. To identify a actionable attack vector, sequential data harvesting was performed by systematically manipulating the numeric parameter downwards in the web browser's URL bar.
+
+![IDOR Boundary Exploitation and Data Exfiltration](./assets/Seccion_Descargas.png)
+
+*Figure 7: Exploitation of the IDOR vulnerability by forcing lower index parameters (`/data/1`) to exfiltrate administrative network capture history.*
+
+Upon lowering the index parameter to `/data/1`, the backend structure processed the request without any session authorization checks and exposed a valid, historical network capture payload showing active transactions. The unauthenticated request successfully exfiltrated a **`1.pcap`** packet transaction history log. The file was downloaded locally using the *Thunar* environment manager on the attacking system, paving the way for cleartext credential analysis.
+
+#### IDOR Boundary Exploitation
 - **Credential Extraction:** `strings 0.pcap | grep -E "USER|PASS"` → `nathan:Buck3tH4TF0RM3!`
 - **Initial Access:** FTP login and download of `user.txt`.
 
