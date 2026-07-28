@@ -134,7 +134,13 @@ Upon forcing the index parameter down to `0` (`http://10.129.68`), the Security 
 
 *Figure 9: Dashboard tracking data updates upon exploiting index 0, displaying 72 populated packet records.*
 
-This data concentration validated that a historical session capture had been successfully intercepted. Clicking the administrative interactive item **"Download"** exfiltrated the authentic **`0.pcap`** data container, providing the specific raw data required to initiate local credential hunting.
+This data concentration validated that a historical session capture had been successfully intercepted. Clicking the administrative interactive item **"Download"** exfiltrated the raw data payload.
+
+![Successful Exfiltration of 0.pcap](./assets/Descargas_0.pcap.png)
+
+*Figure 10: Verification of the downloaded 0.pcap data container within the attacking local environment.*
+
+The presence of the authentic **`0.pcap`** storage container inside the local system environment confirms successful data theft, providing the specific traffic trace files needed to perform analytical credential harvesting.
 
 #### IDOR Boundary Exploitation & Credential Harvesting
 - **Credential Extraction:** `strings 0.pcap | grep -E "USER|PASS"` → `nathan:Buck3tH4TF0RM3!`
@@ -155,12 +161,4 @@ This data concentration validated that a historical session capture had been suc
 | :--- | :--- | :--- |
 | **IDOR on `/download/`** | Sequential numeric IDs without session validation. | Use UUIDs (e.g., `/download/uuid`), enforce user authentication, and validate permissions server-side. |
 | **FTP Credentials in PCAP** | Exposing internal packet captures to unauthenticated users. | Restrict PCAP access to administrators. Disable FTP; use SFTP with key-based authentication. |
-| **Python `cap_setuid+ep`** | Misconfigured Linux capability on a widely available binary. | Remove the capability: `setcap -r /usr/bin/python3.8`. Audit all binaries with `getcap -r /`. |
-
----
-
-## 📚 Lessons Learned
-
-- **IDOR** is a subtle but critical flaw that can expose sensitive internal data (like PCAPs) if not properly controlled.
-
 
