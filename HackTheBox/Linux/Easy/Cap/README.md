@@ -139,6 +139,7 @@ To maintain a strict and cohesive testing workflow, exfiltrated files must be mo
 
 ```bash
 mv /home/kali/Downloads/0.pcap .
+```
 
 This data concentration validated that a historical session capture had been successfully intercepted. Clicking the administrative interactive item **"Download"** exfiltrated the raw data payload.
 
