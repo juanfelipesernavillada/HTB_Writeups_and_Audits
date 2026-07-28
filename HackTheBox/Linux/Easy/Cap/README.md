@@ -1,3 +1,5 @@
+![Cap Logo](./assets/Cap_logo.png)
+
 # 👑 Cap - HackTheBox Machine Walkthrough
 
 **Target:** 10.129.68.112 | **OS:** Linux | **Difficulty:** Easy  
@@ -233,6 +235,13 @@ python3.8 -c 'import os; os.setuid(0); os.system("/bin/bash")'
 
 Verifying the active session context with `whoami` returns `root`, confirming complete and unauthenticated privilege escalation to administrative superuser status.
 
+![Exfiltrating Final Root Flag via Elevated Privileges](./assets/Root_flag.png)
+
+*Figure 22: Accessing the root directory and displaying the final root flag value.*
+
+With full administrative privileges confirmed, directory contents were listed (`ls`) within the `/root` home directory. Executing `cat /root/root.txt` successfully exfiltrated the final target asset, concluding the total system compromise of the target host:
+
+* **Root Flag:** `05e335171411e72ea02cbed2e5686331`
 
 ---
 
