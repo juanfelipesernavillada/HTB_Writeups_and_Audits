@@ -185,6 +185,11 @@ Once inside the interactive FTP shell, directory listings were requested using `
 * **Environment Configuration Files:** Standard user dotfiles including `.bashrc`, `.profile`, and `.cache`.
 * **Evasion Countermeasures:** Symbolic links redirection for `.bash_history` and `.viminfo` pointing to `/dev/null`, preventing local command history tracking on the remote host.
 
+![Exfiltrating User Flag File via Active FTP Session](./assets/Descarga_flag.png)
+
+*Figure 17: Exfiltrating the user flag (`user.txt`) to the local operational workspace using the FTP `get` command.*
+
+With the file permissions verified, the `get user.txt` command was executed within the interactive FTP interface to transfer the target asset from the remote system. The `vsFTPd` service initialized a binary mode data connection and successfully transferred the 33-byte file directly into the local `content/` working directory (`226 Transfer complete`), confirming exfiltration of the initial target flag.
 
 ---
 
