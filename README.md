@@ -23,8 +23,8 @@ The following index lists comprehensive penetration testing and security assessm
 
 ### 🐧 Linux Environments
 * **🟢 Easy:** [Cap](./HackTheBox/Linux/Easy/Cap/README.md) - Exploitation of unsafe system capabilities (`cap_setuid`) and cleartext network traffic analysis.
-* **🟢 Easy:**[Paperwork](./HackTheBox/Windows/Easy/Paperwork/README.md)md) - Web application vulnerability assessment and Windows environment privilege escalation.
+* **🟢 Easy:**[Paperwork](./HackTheBox/Linux/Easy/Paperwork/README.md) - Web application vulnerability assessment and Windows environment privilege escalation.
 
 
 ### 🪟 Windows Environments
-* **🟢 Easy:**[Support](./HackTheBox/Linux/Easy/Support/README.md)md) - Active Directory enumeration, service mapping, and privilege escalation.
+* **🟢 Easy:**[Support](./HackTheBox/Windows/Easy/Support/README.md) - Active Directory enumeration, service mapping, and privilege escalation.
