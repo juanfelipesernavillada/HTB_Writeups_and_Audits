@@ -7,7 +7,6 @@ I am a **Software Development Student** at CESDE Medellín with a strong focus o
 ---
 
 ### 🛡️ Cybersecurity Portfolio & Technical Audits
-*Main Repository:* [`HTB_Writeups_and_Audits`](https://github.com/juanfelipesernavillada/HTB_Writeups_and_Audits)
 
 I document detailed penetration testing reports and vulnerability assessment writeups for compromised Hack The Box machines:
 
@@ -47,4 +46,4 @@ I document detailed penetration testing reports and vulnerability assessment wri
 
 ---
 
-📫 **How to reach me:** Available for Software Development / Cybersecurity Internships and Junior Remote Roles starting immediately. Connect with me on [LinkedIn](https://www.linkedin.com/in/tu-usuario-aqui).
+📫 **How to reach me:** Available for Software Development / Cybersecurity Internships and Junior Remote Roles starting immediately. Connect with me on [LinkedIn](https://www.linkedin.com/in/juan-serna-673baa34b/?skipRedirect=true).
