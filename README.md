@@ -43,9 +43,9 @@ I document detailed penetration testing reports and vulnerability assessment wri
 
 ### 📜 Technical Certifications & Active Preparation
 
-</div>
-
 *Main Repository:* [`Certifications`](https://github.com/juanfelipesernavillada/Certifications)
+
+</div>
 
 * **Cybersecurity:** 🔄 HTB Certified Junior Cybersecurity Analyst (CJCA) *[In Progress]* | ⏳ Cisco CCST Cybersecurity *[In Preparation]*
 * **Networking:** 🛡️ Computer Networking & Internet Protocols (April 2026) | Advanced Internet Networks (April 2026)
