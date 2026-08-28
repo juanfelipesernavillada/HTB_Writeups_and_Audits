@@ -10,7 +10,11 @@ I am a **Software Development Student** at CESDE Medellín with a strong focus o
 
 ---
 
+<div align="center">
+
 ### 🛡️ Cybersecurity Portfolio & Technical Audits
+
+</div>
 
 I document detailed penetration testing reports and vulnerability assessment writeups for compromised Hack The Box machines:
 
@@ -22,7 +26,12 @@ I document detailed penetration testing reports and vulnerability assessment wri
 
 ---
 
+<div align="center">
+
 ### 🚀 Featured Full-Stack Project
+
+</div>
+
 **Custom E-Commerce Architecture & Catalog Engine** *(Node.js + Express + PostgreSQL + Docker)*
 * **AppSec & Hardening:** Enforced production security controls including Helmet security headers, Strict Content Security Policy (CSP), rate-limiting middleware, and server-side payload validation.
 * **Performance & UX:** Implemented dynamic WebP image compression, asset optimization pipeline, automated WhatsApp payload routing, and responsive interfaces with Tailwind CSS.
@@ -30,7 +39,12 @@ I document detailed penetration testing reports and vulnerability assessment wri
 
 ---
 
+<div align="center">
+
 ### 📜 Technical Certifications & Active Preparation
+
+</div>
+
 *Main Repository:* [`Certifications`](https://github.com/juanfelipesernavillada/Certifications)
 
 * **Cybersecurity:** 🔄 HTB Certified Junior Cybersecurity Analyst (CJCA) *[In Progress]* | ⏳ Cisco CCST Cybersecurity *[In Preparation]*
@@ -39,7 +53,11 @@ I document detailed penetration testing reports and vulnerability assessment wri
 
 ---
 
+<div align="center">
+
 ### 🛠️ Tech Stack & Core Competencies
+
+</div>
 
 | Domain | Technologies & Tools |
 | :--- | :--- |
@@ -50,11 +68,11 @@ I document detailed penetration testing reports and vulnerability assessment wri
 
 ---
 
-
+<div align="center">
  
 📫 **How to reach me:** Available for Software Development / Cybersecurity Internships and Junior Remote Roles starting immediately. Connect with me on [LinkedIn]
 
-<div align="center">
+
 
 <a href="https://www.linkedin.com/in/juan-serna-673baa34b/" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
 
