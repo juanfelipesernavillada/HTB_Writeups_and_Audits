@@ -46,8 +46,12 @@ I document detailed penetration testing reports and vulnerability assessment wri
 
 ---
 
-<div align="center">
+
  
-📫 **How to reach me:** Available for Software Development / Cybersecurity Internships and Junior Remote Roles starting immediately. Connect with me on [LinkedIn]<a href="https://www.linkedin.com/in/juan-serna-673baa34b/" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
+📫 **How to reach me:** Available for Software Development / Cybersecurity Internships and Junior Remote Roles starting immediately. Connect with me on [LinkedIn]
+
+<div align="center">
+
+<a href="https://www.linkedin.com/in/juan-serna-673baa34b/" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
 
 </div>
