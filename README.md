@@ -1,8 +1,12 @@
+<div align="center">
+
 # Hi there, I'm Juan Felipe Serna Villada 👋
 
 I am a **Software Development Student** at CESDE Medellín with a strong focus on **Offensive/Defensive Cybersecurity, AppSec, and DevSecOps principles**. Combining full-stack engineering with a security-first mindset, I build resilient web applications and perform technical security audits.
 
 🌐 **Languages:** Spanish (Native) | English (B2 - C1 · Professional Working Proficiency)
+
+</div>
 
 ---
 
