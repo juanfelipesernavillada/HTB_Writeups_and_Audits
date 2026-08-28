@@ -1,9 +1,13 @@
+<div align="center">
+
 ![Cap Logo](./assets/Cap_logo.png)
 
 # 👑 Cap - HackTheBox Machine Walkthrough
 
 **Target:** 10.129.68.112 | **OS:** Linux | **Difficulty:** Easy  
 **Auditor:** Juan Felipe Serna Villada | **Date:** 2026-07-28
+
+</div>
 
 ---
 
