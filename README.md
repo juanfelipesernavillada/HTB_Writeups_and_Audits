@@ -7,13 +7,21 @@
 
 ---
 
+<div align="center">
+
 ### 🗣️ Languages
 > 🌎 **Spanish:** Native | 🇬🇧 **English:** B2 - C1 (Professional Working Proficiency)
 
+</div>
+
 ---
+
+<div align="center">
 
 ### 🛡️ Cybersecurity Portfolio & Technical Audits
 > 📌 *I document detailed penetration testing reports and vulnerability assessment writeups for compromised Hack The Box machines:*
+
+</div>
 
 | 🎯 Target OS | 🔬 Machine | 🚩 Difficulty | 📝 Audit Highlights |
 | :--- | :--- | :--- | :--- |
@@ -23,7 +31,12 @@
 
 ---
 
+<div align="center">
+
 ### 🚀 Featured Full-Stack Project
+
+</div>
+
 **🛒 Custom E-Commerce Architecture & Catalog Engine**
 *(Node.js + Express + PostgreSQL + Docker)*
 * 🔒 **AppSec & Hardening:** Enforced production security controls (Helmet, strict CSP, rate-limiting, server-side payload validation).
@@ -32,8 +45,12 @@
 
 ---
 
+<div align="center">
+
 ### 📜 Technical Certifications & Active Preparation
 > 📁 **Main Repository:** [Certifications](#)
+
+</div>
 
 * 🔐 **Cybersecurity:** HTB Certified Junior Cybersecurity Analyst (CJCA) *[In Progress]* | Cisco CCST Cybersecurity *[In Preparation]*
 * 🌐 **Networking:** Computer Networking & Internet Protocols *(April 2026)* | Advanced Internet Networks *(April 2026)*
@@ -41,7 +58,11 @@
 
 ---
 
+<div align="center">
+
 ### 🛠️ Tech Stack & Core Competencies
+
+</div>
 
 <div align="center">
   <h4>💻 Web Development & Scripting</h4>
@@ -76,8 +97,12 @@
 
 ---
 
+<div align="center">
+
 ### 📫 Let's Connect!
 > 🤝 **Available for:** Software Development / Cybersecurity Internships and Junior Remote Roles starting immediately.
+
+</div>
 
 <div align="center">
   <a href="mailto:juanfelipesernavillada66@gmail.com">
